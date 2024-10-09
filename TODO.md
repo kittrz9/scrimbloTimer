@@ -1,6 +1,6 @@
 ### todo:
- - implement timing and convert the current time to a string
  - get input for hotkeys (I don't think SDL lets you do that without the window focused, might have to directly use X11 stuff)
+ - save best time somewhere and add a way to select what times to compare to
 
 ---
 
