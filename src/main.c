@@ -26,7 +26,7 @@ typedef enum {
 #define CHAR_WIDTH 8
 #define CHAR_HEIGHT 16
 
-void drawStr(float x, float y, float scale, SDL_Surface* fontSurface, SDL_Surface* dstSurface, char* str, align_enum align) {
+void drawStr(SDL_Renderer* renderer, SDL_Texture* fontTexture, float x, float y, float scale, char* str, align_enum align) {
 	uint32_t i = 0;
 	switch(align) {
 		case TEXT_ALIGN_LEFT:
@@ -40,7 +40,19 @@ void drawStr(float x, float y, float scale, SDL_Surface* fontSurface, SDL_Surfac
 			break;
 	}
 	while(*str != '\0') {
-		SDL_BlitSurfaceScaled(fontSurface, &(SDL_Rect){.x=8*getCharMapIndex(*str),.y=0,.w=CHAR_WIDTH,.h=CHAR_HEIGHT}, dstSurface, &(SDL_Rect){.x=x+(i*CHAR_WIDTH*scale), .y=y, .w=CHAR_WIDTH*scale, .h=CHAR_HEIGHT*scale}, SDL_SCALEMODE_NEAREST);
+		SDL_FRect srcRect = {
+			.x = CHAR_WIDTH*getCharMapIndex(*str),
+			.y = 0,
+			.w = CHAR_WIDTH,
+			.h = CHAR_HEIGHT,
+		};
+		SDL_FRect dstRect = {
+			.x = x+(i*CHAR_WIDTH*scale),
+			.y = y,
+			.w = CHAR_WIDTH*scale,
+			.h = CHAR_HEIGHT*scale,
+		};
+		SDL_RenderTexture(renderer, fontTexture, &srcRect, &dstRect);
 
 		++i;
 		++str;
@@ -59,9 +71,9 @@ int main(int argc, char** argv) {
 		exit(1);
 	}
 
-	SDL_Surface* windowSurface = SDL_GetWindowSurface(w);
-	if(windowSurface == NULL) {
-		printf("could not get window surface: %s\n", SDL_GetError());
+	SDL_Renderer* renderer = SDL_CreateRenderer(w, NULL);
+	if(renderer == NULL) {
+		printf("could not create rendere: %s\n", SDL_GetError());
 		exit(1);
 	}
 
@@ -76,6 +88,10 @@ int main(int argc, char** argv) {
 		dataPtr += fontW*4;
 	}
 
+	SDL_Texture* fontTexture = SDL_CreateTextureFromSurface(renderer, fontSurface);
+	SDL_SetTextureScaleMode(fontTexture, SDL_SCALEMODE_NEAREST);
+
+	SDL_DestroySurface(fontSurface);
 
 	uint8_t running = 1;
 
@@ -89,14 +105,16 @@ int main(int argc, char** argv) {
 					break;
 			}
 		}
-		SDL_FillSurfaceRect(windowSurface, NULL, 0);
 
-		drawStr(0,0,2,fontSurface,windowSurface,"0:00.00", TEXT_ALIGN_LEFT);
-
-		SDL_UpdateWindowSurface(w);
+		SDL_SetRenderDrawColor(renderer, 0,0,0,255);
+		SDL_RenderClear(renderer);
+		SDL_SetTextureColorMod(fontTexture, 0,255,0);
+		drawStr(renderer, fontTexture, 0,0,2, "0:00.00", TEXT_ALIGN_LEFT);
+		SDL_RenderPresent(renderer);
 	}
 
-	SDL_DestroyWindowSurface(w);
+	SDL_DestroyTexture(fontTexture);
+	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(w);
 	SDL_Quit();
 	return 0;
