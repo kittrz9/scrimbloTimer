@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
 		printf("could not init SDL: %s\n", SDL_GetError());
 		exit(1);
 	}
-	SDL_Window* w = SDL_CreateWindow("deez", WINDOW_WIDTH, WINDOW_HEIGHT, 0);
+	SDL_Window* w = SDL_CreateWindow("scrimbloTimer", WINDOW_WIDTH, WINDOW_HEIGHT, 0);
 
 	if(w == NULL) {
 		printf("could not create window: %s\n", SDL_GetError());

@@ -5,10 +5,19 @@ set -xe
 BASEDIR="$(dirname $0 | xargs readlink -f)"
 cd $BASEDIR
 
+CC=clang
+REQUIRED_COMMANDS="$CC cmake wget tar"
+
+for cmd in $REQUIRED_COMMANDS; do
+	if [ -z "$(command -v $cmd)" ]; then
+		echo "\n\nERROR: could not find command \"$cmd\", which is required to build this\n\n"
+		exit 1
+	fi
+done
+
 SDL_URL="https://github.com/libsdl-org/SDL/releases/download/preview-3.1.3/SDL3-3.1.3.tar.xz"
 SDL_NAME="SDL3-3.1.3"
 
-CC=clang
 CFLAGS="-g -Wall -Wextra -Wpedantic"
 INCLUDES="-I$SDL_NAME/include"
 # I think I'm still probably not using rpath correctly lmao
