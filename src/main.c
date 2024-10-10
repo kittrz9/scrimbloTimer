@@ -8,6 +8,7 @@
 #include "keys.h"
 #include "timer.h"
 #include "text.h"
+#include "fileDialog.h"
 
 #define WINDOW_WIDTH 300
 #define WINDOW_HEIGHT 100
@@ -24,6 +25,8 @@ int main(int argc, char** argv) {
 		exit(1);
 	}
 
+	timerLoad(w);
+
 	SDL_Renderer* renderer = SDL_CreateRenderer(w, NULL);
 	if(renderer == NULL) {
 		printf("could not create rendere: %s\n", SDL_GetError());
@@ -36,21 +39,39 @@ int main(int argc, char** argv) {
 
 	SDL_Event e;
 	while(running) {
-		while(SDL_PollEvent(&e)) {
-			switch(e.type) {
-				case SDL_EVENT_QUIT:
-					running = 0;
-				default:
-					break;
-			}
+		switch(waitingState) {
+			case WAITING_EXIT:
+				running = 0;
+				break;
+			case WAITING_SAVE:
+			case WAITING_OPEN:
+				while(SDL_PollEvent(&e)) {
+					if(e.type == SDL_EVENT_QUIT) {
+						running = 0;
+					}
+				}
+				SDL_SetRenderDrawColor(renderer, 0,0,0,255);
+				SDL_RenderFillRect(renderer, &(SDL_FRect){0,0,WINDOW_WIDTH,WINDOW_HEIGHT});
+				break;
+			case WAITING_NONE:
+				while(SDL_PollEvent(&e)) {
+					switch(e.type) {
+						case SDL_EVENT_QUIT:
+							timerSave(w);
+							break;
+						default:
+							break;
+					}
+				}
+
+				SDL_SetRenderDrawColor(renderer, 0,0,0,255);
+				SDL_RenderClear(renderer);
+				checkHotkeys();
+
+				processTimer();
+				drawTimer(renderer);
+				break;
 		}
-
-		SDL_SetRenderDrawColor(renderer, 0,0,0,255);
-		SDL_RenderClear(renderer);
-		checkHotkeys();
-
-		processTimer();
-		drawTimer(renderer);
 		SDL_RenderPresent(renderer);
 	}
 

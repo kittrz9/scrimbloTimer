@@ -93,6 +93,7 @@ void processTimer(void) {
 			break;
 	}
 }
+
 void drawTimer(SDL_Renderer* renderer) {
 	timespecDiff(timerStart, timerNow, &timerDiff);
 
@@ -135,3 +136,4 @@ void drawTimer(SDL_Renderer* renderer) {
 	sprintf(str2, "PB: %02i:%02i:%02i.%02i", pbHours, pbMinutes, pbSeconds, pbCentiseconds);
 	drawStr(renderer, 0,CHAR_HEIGHT*3,2, str2, TEXT_ALIGN_LEFT);
 }
+
