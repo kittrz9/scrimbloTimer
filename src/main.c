@@ -5,6 +5,9 @@
 
 #include <SDL3/SDL.h>
 
+#include <X11/Xlib.h>
+#include <X11/keysym.h>
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -108,7 +111,11 @@ int main(int argc, char** argv) {
 
 	SDL_DestroySurface(fontSurface);
 
+	Display* disp = XOpenDisplay(NULL);
+
 	uint8_t running = 1;
+	uint8_t timing = 0;
+	uint8_t lastKeyState = 0;
 
 	struct timespec start;
 	struct timespec now;
@@ -117,6 +124,7 @@ int main(int argc, char** argv) {
 	now = start;
 
 	SDL_Event e;
+	char keyMap[32];
 	while(running) {
 		while(SDL_PollEvent(&e)) {
 			switch(e.type) {
@@ -126,11 +134,24 @@ int main(int argc, char** argv) {
 					break;
 			}
 		}
+
 		SDL_SetRenderDrawColor(renderer, 0,0,0,255);
 		SDL_RenderClear(renderer);
 
 		struct timespec diff;
 		timespecDiff(start, now, &diff);
+		// based on how sfml does keyboard handling
+		// https://github.com/SFML/SFML/blob/758f0804b8e69a2983093fc1a6d655346bee355c/src/SFML/Window/Unix/KeyboardImpl.cpp#L582
+		XQueryKeymap(disp, keyMap);
+		KeyCode k = XKeysymToKeycode(disp, XK_KP_End);
+		uint8_t keyState = (keyMap[k/8] & (1 << k%8));
+		if(keyState != 0 && lastKeyState != keyState) {
+			timing = !timing;
+			if(timing) {
+				clock_gettime(CLOCK_REALTIME, &start);
+			}
+		}
+		lastKeyState = keyState;
 
 		uint8_t centiseconds = diff.tv_nsec / 10000000;
 		uint8_t seconds = diff.tv_sec % 60;
@@ -140,10 +161,16 @@ int main(int argc, char** argv) {
 		char str[16];
 		sprintf(str, "%02i:%02i:%02i.%02i", hours, minutes, seconds, centiseconds);
 
-		SDL_SetTextureColorMod(fontTexture, 0,255,0);
+		if(timing) {
+			SDL_SetTextureColorMod(fontTexture, 255,255,255);
+		} else {
+			SDL_SetTextureColorMod(fontTexture, 0,255,0);
+		}
 		drawStr(renderer, fontTexture, 0,0,3, str, TEXT_ALIGN_LEFT);
 		SDL_RenderPresent(renderer);
-		clock_gettime(CLOCK_REALTIME, &now);
+		if(timing) {
+			clock_gettime(CLOCK_REALTIME, &now);
+		}
 	}
 
 	SDL_DestroyTexture(fontTexture);

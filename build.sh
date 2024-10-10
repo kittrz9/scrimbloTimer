@@ -12,7 +12,7 @@ CC=clang
 CFLAGS="-g -Wall -Wextra -Wpedantic"
 INCLUDES="-I$SDL_NAME/include"
 # I think I'm still probably not using rpath correctly lmao
-LIBS="-Wl,-rpath=./ -Wl,-rpath=./build/ -L./build/ -lSDL3 -lm"
+LIBS="-Wl,-rpath=./ -Wl,-rpath=./build/ -L./build/ -lSDL3 -lm -lX11"
 
 CFILES="$(find src/ -name "*.c")"
 
