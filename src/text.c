@@ -3,6 +3,7 @@
 #include <SDL3/SDL.h>
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -18,6 +19,13 @@ uint8_t getCharMapIndex(char c) {
 void loadFont(SDL_Renderer* renderer) {
 	int fontW, fontH, fontC;
 	uint8_t* fontData = stbi_load("font.png", &fontW, &fontH, &fontC, 4); // maybe could just include the image in the executable to not have to deal with files
+	if(fontData == NULL) {
+		fontData = stbi_load("../font.png", &fontW, &fontH, &fontC, 4); // have to do this since I keep font.png out of the build folder when developing
+		if(fontData == NULL) {
+			printf("could not load font\n");
+			exit(1);
+		}
+	}
 	SDL_Surface* fontSurface = SDL_CreateSurface(fontW, fontH, SDL_PIXELFORMAT_RGBA32);
 	uint8_t* surfacePtr = fontSurface->pixels;
 	uint8_t* dataPtr = fontData;
