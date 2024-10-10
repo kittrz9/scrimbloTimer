@@ -11,28 +11,6 @@
 char keyMap[32];
 Display* disp = NULL;
 
-void startStopTimer(void) {
-	switch(timerState) {
-		case TIMER_STATE_START:
-		case TIMER_STATE_FINISH:
-			clock_gettime(CLOCK_REALTIME, &timerStart);
-			timerState = TIMER_STATE_TIMING;
-			break;
-		case TIMER_STATE_TIMING:
-			timerState = TIMER_STATE_FINISH;
-			break;
-		default:
-			break;
-	}
-}
-
-void resetTimer(void) {
-	if(timerState == TIMER_STATE_TIMING || timerState == TIMER_STATE_FINISH) {
-		clock_gettime(CLOCK_REALTIME, &timerStart);
-		timerNow = timerStart;
-		timerState = TIMER_STATE_START;
-	}
-}
 
 key keys[] = {
 	{

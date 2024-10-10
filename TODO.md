@@ -1,5 +1,5 @@
 ### todo:
- - save best time somewhere and add a way to select what times to compare to
+ - save best time to a file and add a way to select what times to compare to
 
 ---
 

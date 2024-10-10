@@ -13,6 +13,9 @@ extern timerStateEnum timerState;
 extern struct timespec timerStart;
 extern struct timespec timerNow;
 
+void resetTimer(void);
+void startStopTimer(void);
+
 void processTimer(void);
 void drawTimer(SDL_Renderer* renderer);
 
