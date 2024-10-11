@@ -7,7 +7,37 @@
 
 #include "timesFiles.h"
 
+enum {
+	MSGBOX_YES,
+	MSGBOX_NO,
+};
+
 waitingStateEnum waitingState = WAITING_NONE;
+SDL_MessageBoxButtonData msgBoxButtons[] = {
+	{
+		.flags = SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT,
+		.buttonID = MSGBOX_YES,
+		.text = "yeah",
+	},
+	{
+		.flags = SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT,
+		.buttonID = MSGBOX_NO,
+		.text = "nope",
+	}
+};
+
+SDL_MessageBoxData msgBox = {
+	.flags = SDL_MESSAGEBOX_INFORMATION,
+	.window = NULL,
+	.title = "scrimbloTimer",
+	.message = "waga baba bobo",
+	.numbuttons = 2,
+	.buttons = msgBoxButtons,
+	.colorScheme = NULL,
+};
+
+int buttonResult;
+
 
 // have to do these shenanigans because of dumb async stuff
 typedef struct {
@@ -63,11 +93,21 @@ void SDLCALL timerOpenCallback(void* userdata, const char* const* fileList, int 
 }
 
 void timerLoadDialog(SDL_Window* w) {
-	waitingState = WAITING_OPEN;
-	SDL_ShowOpenFileDialog(&timerOpenCallback, &callbackPtrs, w, NULL, 0, NULL, 0);
+	msgBox.message = "would you like to load a personal best?";
+	SDL_ShowMessageBox(&msgBox, &buttonResult);
+	if(buttonResult == MSGBOX_YES) {
+		waitingState = WAITING_OPEN;
+		SDL_ShowOpenFileDialog(&timerOpenCallback, &callbackPtrs, w, NULL, 0, NULL, 0);
+	}
 }
 
 void timerSaveDialog(SDL_Window* w) {
-	waitingState = WAITING_SAVE;
-	SDL_ShowSaveFileDialog(&timerSaveCallback, &callbackPtrs, w, NULL, 0, NULL);
+	msgBox.message = "would you like to save your personal best?";
+	SDL_ShowMessageBox(&msgBox, &buttonResult);
+	if(buttonResult == MSGBOX_YES) {
+		waitingState = WAITING_SAVE;
+		SDL_ShowSaveFileDialog(&timerSaveCallback, &callbackPtrs, w, NULL, 0, NULL);
+	} else {
+		waitingState = WAITING_EXIT;
+	}
 }

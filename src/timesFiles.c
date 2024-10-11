@@ -31,7 +31,7 @@ void timerSaveToFile(char* filePath, struct timespec* pb) {
 		return;
 	}
 
-	fprintf(f, FORMAT_VERSION_STRING "\n%li\n%li", pb->tv_sec, pb->tv_nsec);
+	fprintf(f, FORMAT_VERSION_STRING "\n%li\n%li\n", pb->tv_sec, pb->tv_nsec);
 
 	fclose(f);
 }
