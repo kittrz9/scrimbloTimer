@@ -5,9 +5,9 @@
 
 #include "timer.h"
 
-#define FORMAT_VERSION_STRING "SCRIMBLO_TIME_FORMAT_V0"
+#include "timesFiles.h"
 
-waitingStateEnum waitingState;
+waitingStateEnum waitingState = WAITING_NONE;
 
 // have to do these shenanigans because of dumb async stuff
 typedef struct {
@@ -34,16 +34,7 @@ void SDLCALL timerSaveCallback(void* userdata, const char* const* fileList, int 
 	}
 
 	// only care about the first option given
-	FILE* f = fopen(fileList[0], "wb");
-
-	if(f == NULL) {
-		printf("could not open file to save to\n");
-		return;
-	}
-
-	fprintf(f, FORMAT_VERSION_STRING "\n%li\n%li", pointers->timerBestPtr->tv_sec, pointers->timerBestPtr->tv_nsec);
-
-	fclose(f);
+	timerSaveToFile(fileList[0], pointers->timerBestPtr);
 
 	*(pointers->waitingStatePtr)= WAITING_EXIT;
 
@@ -64,32 +55,19 @@ void SDLCALL timerOpenCallback(void* userdata, const char* const* fileList, int 
 	}
 
 	// only care about the first option given
-	FILE* f = fopen(fileList[0], "rb");
-
-	char str[64];
-	fgets(str, 64, f);
-	if(strncmp(str, FORMAT_VERSION_STRING, strlen(FORMAT_VERSION_STRING)) == 0) {
-		fgets(str, 64, f);
-		pointers->timerBestPtr->tv_sec = atoi(str);
-		fgets(str, 64, f);
-		pointers->timerBestPtr->tv_nsec = atoi(str);
-	} else {
-		printf("invalid times file\n");
-	}
-
-	fclose(f);
+	timerLoadFromFile(fileList[0], pointers->timerBestPtr);
 
 	*(pointers->waitingStatePtr)= WAITING_NONE;
 
 	return;
 }
 
-void timerLoad(SDL_Window* w) {
+void timerLoadDialog(SDL_Window* w) {
 	waitingState = WAITING_OPEN;
 	SDL_ShowOpenFileDialog(&timerOpenCallback, &callbackPtrs, w, NULL, 0, NULL, 0);
 }
 
-void timerSave(SDL_Window* w) {
+void timerSaveDialog(SDL_Window* w) {
 	waitingState = WAITING_SAVE;
 	SDL_ShowSaveFileDialog(&timerSaveCallback, &callbackPtrs, w, NULL, 0, NULL);
 }

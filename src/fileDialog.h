@@ -11,7 +11,7 @@ typedef enum {
 } waitingStateEnum;
 
 extern waitingStateEnum waitingState;
-void timerLoad(SDL_Window* w);
-void timerSave(SDL_Window* w);
+void timerLoadDialog(SDL_Window* w);
+void timerSaveDialog(SDL_Window* w);
 
 #endif // FILE_DIALOG_H

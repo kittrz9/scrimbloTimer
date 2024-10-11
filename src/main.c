@@ -9,6 +9,7 @@
 #include "timer.h"
 #include "text.h"
 #include "fileDialog.h"
+#include "timesFiles.h"
 
 #define WINDOW_WIDTH 300
 #define WINDOW_HEIGHT 100
@@ -25,7 +26,11 @@ int main(int argc, char** argv) {
 		exit(1);
 	}
 
-	timerLoad(w);
+	if(argc > 1) {
+		timerLoadFromFile(argv[1], &timerBest);
+	} else {
+		timerLoadDialog(w);
+	}
 
 	SDL_Renderer* renderer = SDL_CreateRenderer(w, NULL);
 	if(renderer == NULL) {
@@ -57,7 +62,7 @@ int main(int argc, char** argv) {
 				while(SDL_PollEvent(&e)) {
 					switch(e.type) {
 						case SDL_EVENT_QUIT:
-							timerSave(w);
+							timerSaveDialog(w);
 							break;
 						default:
 							break;
