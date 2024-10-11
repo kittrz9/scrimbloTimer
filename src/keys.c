@@ -14,10 +14,12 @@ Display* disp = NULL;
 
 key keys[] = {
 	{
+		.name = "START_STOP_TIMER",
 		.keycode = XK_KP_End,
 		.onPress = startStopTimer,
 	},
 	{
+		.name = "RESET_TIMER",
 		.keycode = XK_KP_Down,
 		.onPress = resetTimer,
 	},
@@ -38,4 +40,13 @@ void checkHotkeys(void) {
 		}
 		keys[i].lastKeyState = keyState;
 	}
+}
+
+key* getHotkeyFromName(char* name) {
+	for(uint8_t i = 0; i < sizeof(keys)/sizeof(key); ++i) {
+		if(strncmp(keys[i].name, name, strlen(keys[i].name)) == 0) {
+			return &keys[i];
+		}
+	}
+	return NULL;
 }

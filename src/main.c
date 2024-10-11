@@ -10,11 +10,13 @@
 #include "text.h"
 #include "fileDialog.h"
 #include "timesFiles.h"
+#include "config.h"
 
 #define WINDOW_WIDTH 300
 #define WINDOW_HEIGHT 100
 
 int main(int argc, char** argv) {
+	loadConfigFile();
 	if(!SDL_Init(SDL_INIT_VIDEO)) {
 		printf("could not init SDL: %s\n", SDL_GetError());
 		exit(1);
