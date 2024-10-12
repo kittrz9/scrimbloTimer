@@ -39,6 +39,7 @@ void loadFont(SDL_Renderer* renderer) {
 	SDL_SetTextureScaleMode(fontTexture, SDL_SCALEMODE_NEAREST);
 
 	SDL_DestroySurface(fontSurface);
+	stbi_image_free(fontData);
 }
 
 void drawStr(SDL_Renderer* renderer, float x, float y, float scale, char* str, align_enum align) {
