@@ -17,6 +17,7 @@
 
 int main(int argc, char** argv) {
 	loadConfigFile();
+	initHotkeys();
 	if(!SDL_Init(SDL_INIT_VIDEO)) {
 		printf("could not init SDL: %s\n", SDL_GetError());
 		exit(1);

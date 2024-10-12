@@ -92,7 +92,7 @@ void loadConfigFile(void) {
 			if(keysym == NoSymbol) {
 				printf("invalid keysym \"%s\", keeping default\n", str);
 			} else {
-				k->keycode = keysym;
+				k->keysym = keysym;
 			}
 			continue;
 		}
