@@ -6,6 +6,7 @@
 #include <stdlib.h>
 
 #define STB_IMAGE_IMPLEMENTATION
+#define STBI_ONLY_PNG
 #include "stb_image.h"
 
 SDL_Texture* fontTexture = NULL;

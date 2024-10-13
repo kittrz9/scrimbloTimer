@@ -51,4 +51,4 @@ for f in $CFILES; do
 	OBJS="$OBJS $OBJNAME"
 done
 
-$CC $CFLAGS $OBJS $LIBS -o build/timer
+$CC $CFLAGS $OBJS $LIBS -o build/scrimbloTimer
